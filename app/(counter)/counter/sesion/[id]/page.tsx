@@ -226,11 +226,16 @@ export default function SesionDetallePage() {
               />
             </div>
             <div className="mb-3 flex items-center justify-center rounded-lg bg-zinc-100 p-3 dark:bg-zinc-800">
-              <p className="break-all text-xs font-mono text-zinc-600 dark:text-zinc-400">
+              <a
+                href={typeof window !== 'undefined' ? `${window.location.origin}${signUrl}` : signUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="break-all text-xs font-mono text-blue-600 underline hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+              >
                 {typeof window !== 'undefined'
                   ? `${window.location.origin}${signUrl}`
                   : signUrl}
-              </p>
+              </a>
             </div>
             <p className="text-xs text-zinc-500">
               El cliente debe escanear este QR con su movil para firmar.
@@ -300,11 +305,16 @@ export default function SesionDetallePage() {
                   />
                 </div>
                 <div className="mb-3 flex items-center justify-center rounded-lg bg-zinc-100 p-3 dark:bg-zinc-800">
-                  <p className="break-all text-xs font-mono text-zinc-600 dark:text-zinc-400">
+                  <a
+                    href={typeof window !== 'undefined' ? `${window.location.origin}/d/${session.access_token.token}` : `/d/${session.access_token.token}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="break-all text-xs font-mono text-blue-600 underline hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                  >
                     {typeof window !== 'undefined'
                       ? `${window.location.origin}/d/${session.access_token.token}`
                       : `/d/${session.access_token.token}`}
-                  </p>
+                  </a>
                 </div>
                 <p className="text-xs text-zinc-400">
                   Expira:{' '}

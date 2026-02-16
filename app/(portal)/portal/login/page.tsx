@@ -1,17 +1,44 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { Suspense, useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 
 export default function PortalLoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-zinc-950">
+          <p className="text-zinc-500">Cargando...</p>
+        </div>
+      }
+    >
+      <LoginForm />
+    </Suspense>
+  );
+}
+
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [mode, setMode] = useState<'login' | 'signup'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
+  useEffect(() => {
+    if (searchParams.get('verified') === 'true') {
+      setSuccess('Email verificado correctamente. Ya puede iniciar sesion.');
+      setMode('login');
+    }
+    if (searchParams.get('error') === 'verification_failed') {
+      setError(
+        'No se pudo verificar el email. El enlace puede haber expirado. Intente registrarse de nuevo.',
+      );
+    }
+  }, [searchParams]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -22,9 +49,17 @@ export default function PortalLoginPage() {
     const supabase = createClient();
 
     if (mode === 'signup') {
+      const redirectUrl =
+        typeof window !== 'undefined'
+          ? `${window.location.origin}/auth/confirm`
+          : '/auth/confirm';
+
       const { error: signUpError } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          emailRedirectTo: redirectUrl,
+        },
       });
 
       if (signUpError) {
@@ -33,29 +68,42 @@ export default function PortalLoginPage() {
         return;
       }
 
-      // Auto-login after signup
-      const { error: loginError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      setSuccess(
+        'Le hemos enviado un email de verificacion. Revise su bandeja de entrada (y spam) y haga click en el enlace para activar su cuenta.',
+      );
+      setMode('login');
+      setPassword('');
+      setLoading(false);
+      return;
+    }
 
-      if (loginError) {
-        setSuccess('Cuenta creada. Inicie sesion.');
-        setMode('login');
-        setLoading(false);
-        return;
-      }
-    } else {
-      const { error: loginError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+    // Login
+    const { error: loginError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
-      if (loginError) {
-        setError('Email o contrasena incorrectos');
-        setLoading(false);
-        return;
+    if (loginError) {
+      const msg = loginError.message.toLowerCase();
+
+      if (
+        msg.includes('email not confirmed') ||
+        msg.includes('email_not_confirmed') ||
+        msg.includes('not confirmed')
+      ) {
+        setError(
+          'Su email aun no ha sido verificado. Revise su bandeja de entrada y haga click en el enlace de verificacion.',
+        );
+      } else if (msg.includes('invalid login credentials') || msg.includes('invalid credentials')) {
+        // Supabase returns this generic error for both wrong password AND unconfirmed email
+        setError(
+          'No se pudo iniciar sesion. Verifique su email y contrasena. Si acaba de registrarse, compruebe que ha confirmado su email haciendo click en el enlace que le enviamos.',
+        );
+      } else {
+        setError(`Error al iniciar sesion: ${loginError.message}`);
       }
+      setLoading(false);
+      return;
     }
 
     // Auto-link client_global by email

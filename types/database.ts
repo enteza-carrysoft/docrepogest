@@ -59,10 +59,24 @@ export interface ClientGlobal {
   created_at: string;
 }
 
+export interface ClientCompany {
+  id: string;
+  tenant_id: string;
+  name: string;
+  cif_nif: string | null;
+  address: string | null;
+  contact_email: string | null;
+  phone: string | null;
+  active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface TenantClient {
   id: string;
   tenant_id: string;
   client_global_id: string;
+  client_company_id: string | null;
   internal_ref: string | null;
   created_at: string;
 }
@@ -129,7 +143,9 @@ export type TenantUserInsert = Pick<TenantUser, 'tenant_id' | 'auth_user_id' | '
 
 export type ClientGlobalInsert = Pick<ClientGlobal, 'full_name'> & Partial<Omit<ClientGlobal, 'id' | 'full_name' | 'created_at'>>;
 
-export type TenantClientInsert = Pick<TenantClient, 'tenant_id' | 'client_global_id'> & Partial<Pick<TenantClient, 'internal_ref'>>;
+export type ClientCompanyInsert = Pick<ClientCompany, 'tenant_id' | 'name'> & Partial<Omit<ClientCompany, 'id' | 'tenant_id' | 'name' | 'created_at' | 'updated_at'>>;
+
+export type TenantClientInsert = Pick<TenantClient, 'tenant_id' | 'client_global_id'> & Partial<Pick<TenantClient, 'internal_ref' | 'client_company_id'>>;
 
 export type SessionInsert = Pick<Session, 'tenant_id' | 'tenant_user_id' | 'tenant_client_id'> & Partial<Pick<Session, 'doc_num' | 'expires_at'>>;
 

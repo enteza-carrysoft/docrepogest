@@ -12,6 +12,8 @@ interface SessionDetail {
   finalized_at: string | null;
   tenant_name: string;
   client_name: string;
+  company_name: string | null;
+  employee_name: string;
   download_token: string | null;
 }
 
@@ -158,6 +160,18 @@ export default function PortalSessionPage() {
                     year: 'numeric',
                   })}
                 </p>
+              </div>
+            )}
+            {session.employee_name && (
+              <div>
+                <p className="text-zinc-500">Atendido por</p>
+                <p className="font-medium">{session.employee_name}</p>
+              </div>
+            )}
+            {session.company_name && (
+              <div>
+                <p className="text-zinc-500">Empresa cliente</p>
+                <p className="font-medium">{session.company_name}</p>
               </div>
             )}
           </div>

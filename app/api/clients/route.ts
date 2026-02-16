@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json();
-  const { full_name, email, phone, dni, internal_ref } = body;
+  const { full_name, email, phone, dni, internal_ref, client_company_id } = body;
 
   if (!full_name) {
     return NextResponse.json(
@@ -37,12 +37,9 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Normalizar PII (Anti-error #9)
+  // Normalizar PII
   const email_norm = email ? email.toLowerCase().trim() : null;
   const phone_norm = phone ? phone.replace(/\s/g, '') : null;
-
-  // Hash DNI si existe (se hará con pgcrypto en producción,
-  // aquí normalizamos para búsqueda)
   const dni_clean = dni ? dni.toUpperCase().replace(/[^A-Z0-9]/g, '') : null;
 
   // Buscar cliente existente por email_norm o dni
@@ -96,6 +93,7 @@ export async function POST(request: NextRequest) {
         tenant_id: tenantUser.tenant_id,
         client_global_id: clientGlobal.id,
         internal_ref: internal_ref || null,
+        client_company_id: client_company_id || null,
       },
       { onConflict: 'tenant_id,client_global_id' },
     )
@@ -119,8 +117,8 @@ export async function POST(request: NextRequest) {
   );
 }
 
-// GET /api/clients - Listar clientes del tenant
-export async function GET() {
+// GET /api/clients?company_id=X&q=term - Listar clientes del tenant
+export async function GET(request: NextRequest) {
   const supabase = await createClient();
 
   const {
@@ -145,12 +143,16 @@ export async function GET() {
     );
   }
 
-  const { data: clients, error } = await supabase
+  const companyId = request.nextUrl.searchParams.get('company_id');
+  const q = request.nextUrl.searchParams.get('q') || '';
+
+  let query = supabase
     .from('tenant_client')
     .select(
       `
       id,
       internal_ref,
+      client_company_id,
       client_global:client_global_id (
         id,
         full_name,
@@ -160,7 +162,14 @@ export async function GET() {
     `,
     )
     .eq('tenant_id', tenantUser.tenant_id)
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .limit(20);
+
+  if (companyId) {
+    query = query.eq('client_company_id', companyId);
+  }
+
+  const { data: clients, error } = await query;
 
   if (error) {
     return NextResponse.json(
@@ -169,5 +178,15 @@ export async function GET() {
     );
   }
 
-  return NextResponse.json(clients);
+  // Filter by name client-side if q is provided (Supabase nested ilike not supported easily)
+  let filtered = clients || [];
+  if (q.trim()) {
+    const lowerQ = q.trim().toLowerCase();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    filtered = filtered.filter((c: any) =>
+      c.client_global?.full_name?.toLowerCase().includes(lowerQ),
+    );
+  }
+
+  return NextResponse.json(filtered);
 }

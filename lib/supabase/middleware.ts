@@ -26,7 +26,17 @@ export async function updateSession(request: NextRequest) {
   );
 
   // Refresh session - important for Server Components
-  await supabase.auth.getUser();
+  const { error } = await supabase.auth.getUser();
+
+  // Si la sesion es invalida (ej: usuario borrado tras reset),
+  // limpiar las cookies de auth para evitar el error en bucle
+  if (error) {
+    request.cookies.getAll().forEach(({ name }) => {
+      if (name.startsWith('sb-')) {
+        supabaseResponse.cookies.delete(name);
+      }
+    });
+  }
 
   return supabaseResponse;
 }
