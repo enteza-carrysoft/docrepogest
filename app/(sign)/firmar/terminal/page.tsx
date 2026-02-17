@@ -64,7 +64,7 @@ export default function TerminalFijoPage() {
 
   // Polling continuo
   useEffect(() => {
-    pollForSession();
+    Promise.resolve().then(() => pollForSession());
 
     pollingRef.current = setInterval(pollForSession, 2000);
 

@@ -192,7 +192,7 @@ export default function SesionDetallePage() {
       const { hash } = await res.json();
       const matches = hash === session?.pdf_original_hash_md5;
       setVerifyResult({ matches, hash });
-    } catch (err) {
+    } catch (_err) {
       setError('Error al verificar el archivo local');
     } finally {
       setVerifying(false);

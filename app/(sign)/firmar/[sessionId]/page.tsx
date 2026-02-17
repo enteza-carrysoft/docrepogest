@@ -43,7 +43,7 @@ export default function FirmarPage() {
   }, [sessionId]);
 
   useEffect(() => {
-    fetchSession();
+    Promise.resolve().then(() => fetchSession());
   }, [fetchSession]);
 
   async function handleSignature(blob: Blob) {

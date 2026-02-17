@@ -58,6 +58,8 @@ export async function GET(request: NextRequest) {
   }
 
   // Transformar datos para el frontend
+  // Transformar datos para el frontend
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const transformedSessions = sessions.map((s: any) => {
     const clientGlobal = s.tenant_client?.client_global;
     return {

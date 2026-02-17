@@ -29,15 +29,17 @@ function LoginForm() {
   const [success, setSuccess] = useState('');
 
   useEffect(() => {
-    if (searchParams.get('verified') === 'true') {
-      setSuccess('Email verificado correctamente. Ya puede iniciar sesion.');
-      setMode('login');
-    }
-    if (searchParams.get('error') === 'verification_failed') {
-      setError(
-        'No se pudo verificar el email. El enlace puede haber expirado. Intente registrarse de nuevo.',
-      );
-    }
+    Promise.resolve().then(() => {
+      if (searchParams.get('verified') === 'true') {
+        setSuccess('Email verificado correctamente. Ya puede iniciar sesion.');
+        setMode('login');
+      }
+      if (searchParams.get('error') === 'verification_failed') {
+        setError(
+          'No se pudo verificar el email. El enlace puede haber expirado. Intente registrarse de nuevo.',
+        );
+      }
+    });
   }, [searchParams]);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -135,21 +137,19 @@ function LoginForm() {
         <div className="flex rounded-lg bg-zinc-100 p-1 dark:bg-zinc-800">
           <button
             onClick={() => { setMode('login'); setError(''); setSuccess(''); }}
-            className={`flex-1 rounded-md py-2 text-sm font-medium transition-colors ${
-              mode === 'login'
+            className={`flex-1 rounded-md py-2 text-sm font-medium transition-colors ${mode === 'login'
                 ? 'bg-white text-zinc-900 shadow-sm dark:bg-zinc-700 dark:text-zinc-100'
                 : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'
-            }`}
+              }`}
           >
             Iniciar sesion
           </button>
           <button
             onClick={() => { setMode('signup'); setError(''); setSuccess(''); }}
-            className={`flex-1 rounded-md py-2 text-sm font-medium transition-colors ${
-              mode === 'signup'
+            className={`flex-1 rounded-md py-2 text-sm font-medium transition-colors ${mode === 'signup'
                 ? 'bg-white text-zinc-900 shadow-sm dark:bg-zinc-700 dark:text-zinc-100'
                 : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'
-            }`}
+              }`}
           >
             Crear cuenta
           </button>

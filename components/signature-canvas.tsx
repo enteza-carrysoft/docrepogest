@@ -30,7 +30,7 @@ export function SignatureCanvas({ onSignature, disabled }: SignatureCanvasProps)
   }, []);
 
   useEffect(() => {
-    clearCanvas();
+    Promise.resolve().then(() => clearCanvas());
   }, [clearCanvas]);
 
   function getPoint(

@@ -1,0 +1,13 @@
+﻿
+> docrepogest@0.1.0 lint
+> eslint
+
+
+C:\Users\carry\Documents\proyectos\docrepogest\app\(counter)\counter\sesion\[id]\page.tsx
+  195:14  warning  '_err' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\carry\Documents\proyectos\docrepogest\app\api\utils\hash\route.ts
+  18:14  warning  '_err' is defined but never used  @typescript-eslint/no-unused-vars
+
+Ô£û 2 problems (0 errors, 2 warnings)
+

@@ -74,7 +74,7 @@ export async function GET(request: NextRequest) {
   }
 
   // Aplanar datos para el terminal
-  const tc = session.tenant_client as any;
+  const tc = session.tenant_client as { client_global?: { full_name?: string } } | null;
   const clientName: string = tc?.client_global?.full_name ?? 'Cliente';
 
   return NextResponse.json({

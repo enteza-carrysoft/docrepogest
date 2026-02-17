@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
         const md5Hash = crypto.createHash('md5').update(buffer).digest('hex');
 
         return NextResponse.json({ hash: md5Hash });
-    } catch (err) {
+    } catch (_err) {
         return NextResponse.json({ error: 'Error al procesar el archivo' }, { status: 500 });
     }
 }
