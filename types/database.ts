@@ -45,6 +45,7 @@ export interface TenantUser {
   name: string;
   email: string;
   active: boolean;
+  terminal_token: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -91,7 +92,8 @@ export interface Session {
   signature_path: string | null;
   pdf_original_path: string | null;
   pdf_final_path: string | null;
-  pdf_original_hash: string | null;
+  pdf_original_hash_md5: string | null;
+  pending_terminal_at: string | null;
   finalizing_at: string | null;
   finalized_at: string | null;
   expires_at: string;
@@ -107,7 +109,7 @@ export interface Document {
   storage_path: string;
   file_size: number | null;
   mime_type: string;
-  hash_sha256: string | null;
+  hash_md5: string | null;
   created_at: string;
 }
 
@@ -149,7 +151,7 @@ export type TenantClientInsert = Pick<TenantClient, 'tenant_id' | 'client_global
 
 export type SessionInsert = Pick<Session, 'tenant_id' | 'tenant_user_id' | 'tenant_client_id'> & Partial<Pick<Session, 'doc_num' | 'expires_at'>>;
 
-export type DocumentInsert = Pick<Document, 'session_id' | 'tenant_id' | 'type' | 'storage_path'> & Partial<Pick<Document, 'file_size' | 'mime_type' | 'hash_sha256'>>;
+export type DocumentInsert = Pick<Document, 'session_id' | 'tenant_id' | 'type' | 'storage_path'> & Partial<Pick<Document, 'file_size' | 'mime_type' | 'hash_md5'>>;
 
 export type AccessTokenInsert = Pick<AccessToken, 'session_id' | 'tenant_id' | 'type' | 'expires_at'>;
 

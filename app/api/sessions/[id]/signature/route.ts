@@ -83,12 +83,13 @@ export async function POST(
     );
   }
 
-  // Actualizar sesión con path de firma
+  // Actualizar sesión con path de firma y limpiar flag de terminal
   await supabase
     .from('sessions')
     .update({
       signature_path: storagePath,
       status: 'SIGNED',
+      pending_terminal_at: null,
     })
     .eq('id', sessionId);
 

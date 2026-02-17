@@ -1,7 +1,78 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
-// POST /api/sessions - Crear nueva sesión de entrega
+// GET /api/sessions - Listar sesiones del tenant
+export async function GET(request: NextRequest) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return NextResponse.json({ error: 'No autenticado' }, { status: 401 });
+  }
+
+  // Obtener tenant_user del empleado autenticado
+  const { data: tenantUser, error: tuError } = await supabase
+    .from('tenant_users')
+    .select('id, tenant_id')
+    .eq('auth_user_id', user.id)
+    .eq('active', true)
+    .single();
+
+  if (tuError || !tenantUser) {
+    return NextResponse.json(
+      { error: 'Usuario no asociado a un negocio' },
+      { status: 403 },
+    );
+  }
+
+  const { searchParams } = new URL(request.url);
+  const limit = parseInt(searchParams.get('limit') || '20');
+
+  // Obtener sesiones del tenant con información del cliente
+  const { data: sessions, error: sessionsError } = await supabase
+    .from('sessions')
+    .select(`
+      id,
+      doc_num,
+      status,
+      created_at,
+      tenant_client:tenant_client_id (
+        client_global:client_global_id (
+          full_name,
+          email_norm
+        )
+      )
+    `)
+    .eq('tenant_id', tenantUser.tenant_id)
+    .order('created_at', { ascending: false })
+    .limit(limit);
+
+  if (sessionsError) {
+    return NextResponse.json(
+      { error: 'Error al cargar sesiones', detail: sessionsError.message },
+      { status: 500 },
+    );
+  }
+
+  // Transformar datos para el frontend
+  const transformedSessions = sessions.map((s: any) => {
+    const clientGlobal = s.tenant_client?.client_global;
+    return {
+      id: s.id,
+      doc_num: s.doc_num,
+      status: s.status,
+      created_at: s.created_at,
+      client_name: clientGlobal?.full_name || 'Sin nombre',
+      client_email: clientGlobal?.email_norm || null,
+    };
+  });
+
+  return NextResponse.json({ sessions: transformedSessions });
+}
+
 export async function POST(request: NextRequest) {
   const supabase = await createClient();
 

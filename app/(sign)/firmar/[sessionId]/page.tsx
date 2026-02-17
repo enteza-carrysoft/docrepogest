@@ -65,9 +65,17 @@ export default function FirmarPage() {
       return;
     }
 
+    // Mostrar confirmación por 3 segundos y luego resetear
     setPageState('done');
     await fetchSession();
+
+    // Auto-reset después de 3 segundos para permitir nuevas firmas
+    setTimeout(() => {
+      setPageState('ready');
+      setError('');
+    }, 3000);
   }
+
 
   // Loading
   if (pageState === 'loading') {
@@ -144,6 +152,9 @@ export default function FirmarPage() {
               {session?.status === 'FINALIZED'
                 ? 'El documento firmado está listo. Recibirás una copia en breve.'
                 : 'Tu firma ha sido registrada. El documento se completará cuando el negocio suba el PDF.'}
+            </p>
+            <p className="mt-3 text-xs text-green-600 dark:text-green-600">
+              Volviendo a la pantalla de espera...
             </p>
           </div>
         )}

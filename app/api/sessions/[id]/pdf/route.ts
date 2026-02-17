@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { tryFinalize } from '@/lib/pdf/try-finalize';
+import crypto from 'crypto';
 
 // POST /api/sessions/[id]/pdf - Subir PDF original del ERP
 export async function POST(
@@ -68,6 +69,9 @@ export async function POST(
   const buffer = Buffer.from(await file.arrayBuffer());
   const storagePath = `${session.tenant_id}/${sessionId}/original.pdf`;
 
+  // Calcular hash MD5 del PDF para verificación de integridad
+  const md5Hash = crypto.createHash('md5').update(buffer).digest('hex');
+
   const { error: uploadError } = await supabase.storage
     .from('docs-original')
     .upload(storagePath, buffer, {
@@ -82,16 +86,17 @@ export async function POST(
     );
   }
 
-  // Actualizar sesión con path del PDF
+  // Actualizar sesión con path y hash del PDF
   await supabase
     .from('sessions')
     .update({
       pdf_original_path: storagePath,
+      pdf_original_hash_md5: md5Hash,
       status: 'PDF_UPLOADED',
     })
     .eq('id', sessionId);
 
-  // Registrar documento
+  // Registrar documento con hash
   await supabase.from('documents').insert({
     session_id: sessionId,
     tenant_id: session.tenant_id,
@@ -99,6 +104,7 @@ export async function POST(
     storage_path: storagePath,
     file_size: file.size,
     mime_type: 'application/pdf',
+    hash_md5: md5Hash,
   });
 
   // Audit

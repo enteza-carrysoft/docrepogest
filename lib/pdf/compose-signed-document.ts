@@ -21,7 +21,7 @@ interface ComposeResult {
  * Motor PDF - Genera el PDF final firmado
  *
  * Pipeline:
- * 1. Calcular SHA-256 del PDF original
+ * 1. Calcular MD5 del PDF original
  * 2. Cargar PDF original
  * 3. Generar página de certificación con firma embebida
  * 4. Merge: original + página certificación
@@ -44,8 +44,8 @@ export async function composeSignedDocument(
     signedAt,
   } = input;
 
-  // 1. Hash SHA-256 del original
-  const originalHash = createHash('sha256')
+  // 1. Hash MD5 del original (Códigos cortos para facilidad de uso)
+  const originalHash = createHash('md5')
     .update(originalPdfBytes)
     .digest('hex');
 
@@ -171,7 +171,7 @@ export async function composeSignedDocument(
   });
   y -= 15;
 
-  page.drawText(`SHA-256: ${originalHash}`, {
+  page.drawText(`MD5: ${originalHash}`, {
     x: margin,
     y,
     size: 8,

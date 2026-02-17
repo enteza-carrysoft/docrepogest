@@ -1,4 +1,5 @@
 import { SupabaseClient } from '@supabase/supabase-js';
+import { createHash } from 'crypto';
 import { composeSignedDocument } from './compose-signed-document';
 import { sendDeliveryEmail } from '@/lib/email/send-delivery-email';
 
@@ -137,11 +138,15 @@ export async function tryFinalize(
     }
 
     // 6. Actualizar sesión
+    // Calular hash del PDF FINAL para integridad del resultado
+    const finalPdfHash = createHash('md5').update(finalPdfBytes).digest('hex');
+
+    // 6. Actualizar sesión
     await supabase
       .from('sessions')
       .update({
         pdf_final_path: finalPath,
-        pdf_original_hash: originalHash,
+        pdf_original_hash_md5: originalHash,
         status: 'FINALIZED',
         finalized_at: new Date().toISOString(),
       })
@@ -155,7 +160,7 @@ export async function tryFinalize(
       storage_path: finalPath,
       file_size: finalPdfBytes.length,
       mime_type: 'application/pdf',
-      hash_sha256: originalHash,
+      hash_md5: finalPdfHash,
     });
 
     // Generar access_token para QR (24h)

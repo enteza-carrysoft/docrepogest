@@ -1,4 +1,5 @@
-# Python
+u
+Ya # Python
 __pycache__/
 *.py[cod]
 *$py.class
@@ -13,6 +14,7 @@ dist/
 downloads/
 eggs/
 .eggs/
+lib/
 lib64/
 parts/
 sdist/
@@ -71,16 +73,12 @@ dmypy.json
 .mypy_cache
 
 # Claude Code
-.claude/settings.local.json
 .claude/skills/**/venv
 .claude/skills/**/__pycache__
 .claude/skills/**/node_modules
 .claude/plugins
 *.mcp.json
 !example.mcp.json
-
-# Test output
-scripts/test-output/
 
 # FastAPI
 .uvicorn
@@ -92,15 +90,15 @@ scripts/test-output/
 .env.*.local
 secrets.json
 
-# Next.js
-.next/
-out/
-next-env.d.ts
-tsconfig.tsbuildinfo
-
 # Project specific
 output/
 logs/
 *.xlsx
 *.csv
 node_modules
+.next/
+out/
+build/
+dist/
+.env*.local
+.vercel

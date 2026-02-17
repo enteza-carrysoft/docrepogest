@@ -70,6 +70,7 @@ create table tenant_users (
   name          text not null,
   email         text not null,
   active        boolean not null default true,
+  terminal_token text unique default encode(gen_random_bytes(16), 'hex'),
   created_at    timestamptz not null default now(),
   updated_at    timestamptz not null default now(),
 
@@ -130,7 +131,7 @@ create table sessions (
   signature_path    text,
   pdf_original_path text,
   pdf_final_path    text,
-  pdf_original_hash text,
+  pdf_original_hash_md5 text,
   finalizing_at     timestamptz,
   finalized_at      timestamptz,
   expires_at        timestamptz not null default (now() + interval '24 hours'),
@@ -157,7 +158,7 @@ create table documents (
   storage_path  text not null,
   file_size     bigint,
   mime_type     text not null default 'application/pdf',
-  hash_sha256   text,
+  hash_md5      text,
   created_at    timestamptz not null default now()
 );
 
