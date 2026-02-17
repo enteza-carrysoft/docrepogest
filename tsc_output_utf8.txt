@@ -1,0 +1,16 @@
+﻿.next/dev/types/validator.ts(234,31): error TS2344: Type 'typeof import("C:/Users/carry/Documents/proyectos/docrepogest/app/api/sessions/ [id]/pdf/download/route")' does not satisfy the constraint 'RouteHandlerConfig<"/api/sessions/ [id]/pdf/download">'.
+  Types of property 'GET' are incompatible.
+    Type '(request: NextRequest, { params }: { params: Promise<{ id: string; }>; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ url: string; }>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{}>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{}>; }' is not assignable to type '{ params: Promise<{ id: string; }>; }'.
+          Types of property 'params' are incompatible.
+            Type 'Promise<{}>' is not assignable to type 'Promise<{ id: string; }>'.
+              Property 'id' is missing in type '{}' but required in type '{ id: string; }'.
+.next/types/validator.ts(234,31): error TS2344: Type 'typeof import("C:/Users/carry/Documents/proyectos/docrepogest/app/api/sessions/ [id]/pdf/download/route")' does not satisfy the constraint 'RouteHandlerConfig<"/api/sessions/ [id]/pdf/download">'.
+  Types of property 'GET' are incompatible.
+    Type '(request: NextRequest, { params }: { params: Promise<{ id: string; }>; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ url: string; }>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{}>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{}>; }' is not assignable to type '{ params: Promise<{ id: string; }>; }'.
+          Types of property 'params' are incompatible.
+            Type 'Promise<{}>' is not assignable to type 'Promise<{ id: string; }>'.
+              Property 'id' is missing in type '{}' but required in type '{ id: string; }'.
